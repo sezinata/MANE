@@ -1,0 +1,1 @@
+Labels for node classification (MANE-attention version) must be 1 for positive and -1 for negative samples during training and testing.
