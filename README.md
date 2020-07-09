@@ -1,7 +1,7 @@
 # MANE
 Multi-View Collaborative Network Embedding https://arxiv.org/abs/2005.08189
 
-Embedding learning algorithm with two versions: attention (MANE+, semi-supervised version) and without attention (MANE, unsupervised version) on a multi-view / multi-network dataset.
+Embedding learning algorithm with two versions: <strong>attention (MANE+, semi-supervised version) </strong> and <strong>without attention (MANE, unsupervised version)</strong> on a multi-view / multi-network dataset.
 
 Three different datasets /tasks are available:
 1) Link prediction: Binary class 
