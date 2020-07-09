@@ -46,7 +46,7 @@ class MANEAttention(nn.Module):
         self.classifier_b = nn.Parameter(torch.randn(self.n_classes, requires_grad=True))
         self.b_att = nn.ParameterList([])
 
-        for n_net in range(self.num_net):  # len(G)
+        for n_net in range(self.num_net):
             self.node_embeddings.append(nn.Embedding(self.n_embedding, self.embedding_dim))
             self.neigh_embeddings.append(nn.Embedding(self.n_embedding, self.embedding_dim))
             self.attention.append(
@@ -141,36 +141,35 @@ class MANEAttention(nn.Module):
 
         return -(torch.mean(torch.stack(cost1)) + sum(sum_cost2) / len(sum_cost2) + sum(sum_cost3) / len(sum_cost3)) / 3
 
-    def supervision_link_multi_class(self,labels, common_nodes, nodeidx, label, hyp_s):
+    def supervision_link_multi_class(self, labels, common_nodes, nodeidx, label, hyp_s):
 
         criterion = nn.CrossEntropyLoss()
-        tanh=nn.Tanh()
+        tanh = nn.Tanh()
         allidx = torch.LongTensor(np.arange(self.n_embedding)).to(self.device)
 
         concat_tensors = self.node_embeddings[0].weight[Variable(allidx)]
         for i_tensor in range(1, self.num_net):
             concat_tensors = (
                 torch.cat((concat_tensors, self.node_embeddings[i_tensor].weight[Variable(allidx)]), 1))
-        # self.attention_copy[0].data.copy_(self.attention[0].data)
-        cur_atts=[]
+        cur_atts = []
         for i_att in range(0, self.num_net):
-
-            cur_atts.append((self.nn_linears[i_att](tanh(concat_tensors[Variable(allidx)]* self.attention[i_att].unsqueeze(0).to(self.device)+self.b_att[i_att].to(self.device))) ) ) #elementwise product
+            cur_atts.append((self.nn_linears[i_att](tanh(
+                concat_tensors[Variable(allidx)] * self.attention[i_att].unsqueeze(0).to(self.device) + self.b_att[
+                    i_att].to(self.device)))))  # elementwise product
 
         self.final_emb = torch.bmm(self.node_embeddings[0].weight[Variable(allidx)].unsqueeze(2),
-                    (torch.exp(cur_atts[0])/sum(torch.exp(cur_atts[i_att]) for i_att
-                    in range(self.num_net))).unsqueeze(2) )
+                                   (torch.exp(cur_atts[0]) / sum(torch.exp(cur_atts[i_att]) for i_att
+                                                                 in range(self.num_net))).unsqueeze(2))
 
         for i_tensor in range(1, self.num_net):
-            self.final_emb = (torch.cat((self.final_emb , torch.bmm(self.node_embeddings[i_tensor].weight[
-                Variable(allidx)].unsqueeze(2), (torch.exp(cur_atts[i_tensor])/sum(torch.exp(cur_atts[i_att]) for i_att
-                    in range(self.num_net))).unsqueeze(2))),1))
+            self.final_emb = (torch.cat((self.final_emb, torch.bmm(self.node_embeddings[i_tensor].weight[
+                                                                       Variable(allidx)].unsqueeze(2), (
+                                                                               torch.exp(cur_atts[i_tensor]) / sum(
+                                                                           torch.exp(cur_atts[i_att]) for i_att
+                                                                           in range(self.num_net))).unsqueeze(2))), 1))
 
+        embedding = tanh(self.final_emb.squeeze())
 
-        final_emb = tanh(self.final_emb.squeeze())
-        resultOfModel1 = final_emb
-        embedding = resultOfModel1
-        #
         node_embed_dict = dict(zip(common_nodes, embedding.to('cpu')))
         two_nodes = np.column_stack((labels[:, 0], labels[:, 1]))
         two_nodes_tuples = tuple(map(tuple, two_nodes))  # convert pairs to tuple
@@ -179,7 +178,7 @@ class MANEAttention(nn.Module):
 
         X = [torch.cat((node_embed_dict[each_pair[0]], node_embed_dict[each_pair[1]]), dim=0) for each_pair in
              two_nodes_tuples if (each_pair[0] in node_embed_dict) and (
-                     each_pair[1] in node_embed_dict)]  # convert to a list, otherwise singleton array.
+                     each_pair[1] in node_embed_dict)]
 
         label = torch.LongTensor(label).to(self.device)
 
@@ -189,7 +188,6 @@ class MANEAttention(nn.Module):
 
         cost_sup = hyp_s * loss_labels
         return cost_sup
-
 
     '''
     # Clear version of cost1 cost2 and cost3
@@ -422,8 +420,6 @@ def main():
 
     epo = 0
 
-
-
     while epo <= params.epochs - 1:
         start_init = time.time()
         epo += 1
@@ -500,20 +496,22 @@ def main():
     print('Embedding of view ', 1, ' ', concat_tensors)
 
     for i_tensor in range(1, model.num_net):
-        print('Embedding of view ',(i_tensor+1),' ',model.node_embeddings[i_tensor].weight.detach().cpu())
+        print('Embedding of view ', (i_tensor + 1), ' ', model.node_embeddings[i_tensor].weight.detach().cpu())
         concat_tensors = torch.cat((concat_tensors, model.node_embeddings[i_tensor].weight.detach().cpu()), 1)
     #
 
     embed_result = np.array(concat_tensors)
 
-    emb_file = params.output+params.dataset+"/Embedding_" + "concatenated" + str(params.cur_split) + '_epoch_' + str(
+    emb_file = params.output + params.dataset + "/Embedding_" + "concatenated" + str(
+        params.cur_split) + '_epoch_' + str(
         epo) + "_" + ".txt"
 
     fo = open(emb_file, 'a+')
     for idx in range(len(embed_result)):
         word = (idx2node[idx])
-        fo.write(word +' '+ ' '.join(map(str,embed_result[idx]))+ '\n')
+        fo.write(word + ' ' + ' '.join(map(str, embed_result[idx])) + '\n')
     fo.close()
+
 
 if __name__ == '__main__':
     main()
