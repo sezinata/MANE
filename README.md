@@ -20,4 +20,4 @@ scipy	1.2.0
 torch	0.4.1
 Python 3.5
 
-Compatible with both cuda and cpu devices, depending on the user choice through arg_parser file. Also compatible with python 2 and python 3.
+Compatible with both cuda and cpu devices, depending on the user choice through arg_parser file. Also compatible with python2 and python3.
