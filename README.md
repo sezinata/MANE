@@ -10,6 +10,7 @@ Three different datasets /tasks are available:
 
 Example datasets and input formats are provided.
 
-Usage: 1) args_parser file of a chosen task should be modified for parameter settings or other choices before running the code.
-       2) main file of a chosen task should be run. (e.g., python main_Node_Classification_MANE.py)
+Usage: 
+1) args_parser file of a chosen task should be modified for parameter settings or other choices before running the code.
+2) main file of a chosen task should be run. (e.g., python main_Node_Classification_MANE.py)
 
