@@ -169,8 +169,7 @@ class MANEAttention(nn.Module):
                                                                        in range(self.num_net))).unsqueeze(2))),
                                         1))
 
-        final_emb = tan_h(self.final_emb.squeeze())
-        embedding = final_emb
+        embedding = tan_h(self.final_emb.squeeze())
         #
         node_embed_dict = dict(zip(common_nodes, embedding.to('cpu')))
         two_nodes = np.column_stack((labels[:, 0], labels[:, 1]))
@@ -185,7 +184,6 @@ class MANEAttention(nn.Module):
         label = torch.Tensor(label).to(self.device)
 
         sigmoid_fn = nn.Sigmoid()
-        ##  print(torch.stack(X).size())
         loss_labels = F.binary_cross_entropy(
             sigmoid_fn(torch.matmul(torch.stack(X).float().to(self.device), self.classifier_w) + self.classifier_b),
             label.unsqueeze(1))
