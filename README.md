@@ -16,6 +16,7 @@ Usage:
 
 Experiments performed on:
 scikit-learn	0.19.1
+numpy	1.15.4
 scipy	1.2.0	
 torch	0.4.1
 Python 3.5
