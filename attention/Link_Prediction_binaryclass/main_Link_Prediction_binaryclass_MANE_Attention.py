@@ -193,63 +193,53 @@ class MANEAttention(nn.Module):
 
     '''
     # Clear version of cost1 cost2 and cost3
-    cost = []
-    for i in range(self.num_net):
-
-        batch_indices = shuffle_indices_nets[i][count:count + self.batch_size]
-
-        nodes_idx = torch.LongTensor(nodesidx_nets[i][batch_indices]).to(self.device)
-        node_emb = self.node_embeddings[i](Variable(nodes_idx)).view(len(batch_indices), -1).unsqueeze(2)
-
-        neighs_idx = torch.LongTensor(neighidx_nets[i][batch_indices]).to(self.device)
-        neigh_emb = self.neigh_embeddings[i](Variable(neighs_idx)).unsqueeze(2).view(len(batch_indices), -1,
-                                                                                    self.embedding_dim)
-        loss_positive = nn.functional.logsigmoid(torch.bmm(neigh_emb, node_emb)).squeeze().mean()
-        negative_context = self.embed_freq.multinomial(
-            len(batch_indices) * neigh_emb.size(1) * self.negative_sampling_size,
-            replacement=True).to(self.device)
-        negative_context_emb = self.neigh_embeddings[i](negative_context).view(len(batch_indices), -1,
-                                                                               self.embedding_dim).neg()
-        loss_negative = nn.functional.logsigmoid(torch.bmm(negative_context_emb, node_emb)).squeeze().sum(1).mean(0)
-        cost.append(loss_positive + loss_negative)
-
-
-        for j in range(self.num_net):
-            if j != i:
-                node_neigh_emb = self.node_embeddings[j](Variable(nodes_idx)).unsqueeze(2).view(len(batch_indices),
-                                                                                                -1,
-                                                                                                self.embedding_dim)
-                loss_positive = nn.functional.logsigmoid(torch.bmm(node_neigh_emb, node_emb)).squeeze().mean()
-                negative_context2 = self.embed_freq.multinomial(
-                    len(batch_indices) * node_neigh_emb.size(1) * self.negative_sampling_size,
-                    replacement=True).to(self.device)
-
-                negative_context_emb2 = self.node_embeddings[j](negative_context2).view(len(batch_indices), -1,
-                                                                                        self.embedding_dim).neg()
-                loss_negative = nn.functional.logsigmoid(torch.bmm(negative_context_emb2, node_emb)).squeeze().sum(
-                    1).mean(0)
-                cost.append(hyp1 * (loss_positive + loss_negative))
-
-
-        for j in range(self.num_net):
-            if j != i:
-                cross_neighs_idx = torch.LongTensor(
-                    neighidx_nets[i][batch_indices]).to(self.device)
-                cross_neigh_emb = self.neigh_embeddings[j](Variable(cross_neighs_idx)).unsqueeze(2).view(
-                    len(batch_indices), -1,
-                    self.embedding_dim)
-                loss_positive = nn.functional.logsigmoid(torch.bmm(cross_neigh_emb, node_emb)).squeeze().mean()
-                negative_context3 = self.embed_freq.multinomial(
-                    len(batch_indices) * cross_neigh_emb.size(1) * self.negative_sampling_size,
-                    replacement=True).to(self.device)
-                negative_context_emb = self.neigh_embeddings[j](negative_context3).view(len(batch_indices), -1,
-                                                                                        self.embedding_dim).neg()
-                loss_negative = nn.functional.logsigmoid(torch.bmm(negative_context_emb, node_emb)).squeeze().sum(
-                    1).mean(0)
-                cost.append(hyp2 * (loss_positive + loss_negative))
-
-
-    return -sum(cost) / len(cost)
+      cost = []
+      for i in range(self.num_net):
+          batch_indices = shuffle_indices_nets[i][count:count + self.batch_size]
+          nodes_idx = torch.LongTensor(nodes_idx_nets[i][batch_indices]).to(self.device)
+          node_emb = self.node_embeddings[i](Variable(nodes_idx)).view(len(batch_indices), -1).unsqueeze(2)
+          neighs_idx = torch.LongTensor(neigh_idx_nets[i][batch_indices]).to(self.device)
+          neigh_emb = self.neigh_embeddings[i](Variable(neighs_idx)).unsqueeze(2).view(len(batch_indices), -1,
+                                                                                      self.embedding_dim)
+          loss_positive = nn.functional.logsigmoid(torch.bmm(neigh_emb, node_emb)).squeeze().mean()
+          negative_context = self.embed_freq.multinomial(
+              len(batch_indices) * neigh_emb.size(1) * self.negative_sampling_size,
+              replacement=True).to(self.device)
+          negative_context_emb = self.neigh_embeddings[i](negative_context).view(len(batch_indices), -1,
+                                                                                self.embedding_dim).neg()
+          loss_negative = nn.functional.logsigmoid(torch.bmm(negative_context_emb, node_emb)).squeeze().sum(1).mean(0)
+          cost.append(loss_positive + loss_negative)
+          for j in range(self.num_net):
+              if j != i:
+                  node_neigh_emb = self.node_embeddings[j](Variable(nodes_idx)).unsqueeze(2).view(len(batch_indices),
+                                                                                                  -1,
+                                                                                                  self.embedding_dim)
+                  loss_positive2 = nn.functional.logsigmoid(torch.bmm(node_neigh_emb, node_emb)).squeeze().mean()
+                  negative_context2 = self.embed_freq.multinomial(
+                      len(batch_indices) * node_neigh_emb.size(1) * self.negative_sampling_size,
+                      replacement=True).to(self.device)
+                  negative_context_emb2 = self.node_embeddings[j](negative_context2).view(len(batch_indices), -1,
+                                                                                          self.embedding_dim).neg()
+                  loss_negative2= nn.functional.logsigmoid(torch.bmm(negative_context_emb2, node_emb)).squeeze().sum(
+                      1).mean(0)
+                  cost.append(hyp1 * (loss_positive2 + loss_negative2))
+          for j in range(self.num_net):
+              if j != i:
+                  cross_neighs_idx = torch.LongTensor(
+                      neigh_idx_nets[i][batch_indices]).to(self.device)
+                  cross_neigh_emb = self.neigh_embeddings[j](Variable(cross_neighs_idx)).unsqueeze(2).view(
+                      len(batch_indices), -1,
+                      self.embedding_dim)
+                  loss_positive3 = nn.functional.logsigmoid(torch.bmm(cross_neigh_emb, node_emb)).squeeze().mean()
+                  negative_context3 = self.embed_freq.multinomial(
+                      len(batch_indices) * cross_neigh_emb.size(1) * self.negative_sampling_size,
+                      replacement=True).to(self.device)
+                  negative_context_emb3 = self.neigh_embeddings[j](negative_context3).view(len(batch_indices), -1,
+                                                                                          self.embedding_dim).neg()
+                  loss_negative3 = nn.functional.logsigmoid(torch.bmm(negative_context_emb3, node_emb)).squeeze().sum(
+                      1).mean(0)
+                  cost.append(hyp2 * (loss_positive3 + loss_negative3))
+      return -sum(cost) / len(cost)
     '''
 
 
