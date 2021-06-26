@@ -1,1 +1,1 @@
-test data for final embeddings to be fed into logic regression
+train-test data for final embeddings to be fed into logic regression
