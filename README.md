@@ -1,5 +1,5 @@
 # MANE
-Multi-View Collaborative Network Embedding https://arxiv.org/abs/2005.08189
+Multi-View Collaborative Network Embedding https://arxiv.org/abs/2005.08189. (https://dl.acm.org/doi/fullHtml/10.1145/3441450)
 
 Embedding learning algorithm with two versions: <strong>attention (MANE+, semi-supervised version) </strong> and <strong>without attention (MANE, unsupervised version)</strong> on a multi-view / multi-network dataset.
 
