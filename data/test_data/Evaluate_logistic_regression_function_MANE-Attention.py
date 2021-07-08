@@ -1,5 +1,5 @@
 def computeLogRes_mane_attention():
-    print('ney')
+   
     pathRead = "mane/" + dataset_choice + "/" + \
                method_choice[met] + "/"
     choice = 4
@@ -8,8 +8,6 @@ def computeLogRes_mane_attention():
     param = ""
     param_name = ""
     if dataset_choice == 'LinkedIn':
-        # print(label_emb)
-        #   idx2node = {idx:n  for (idx, n) in enumerate(common_node_names)}
 
         sumf1macroList = []
         sumf1weightedList = []
@@ -66,7 +64,7 @@ def computeLogRes_mane_attention():
                         key_protein = ((line.split()[0]))  ##str
                         embed = np.array(line.split()[1:])
                         node_embed_dict[key_protein] = np.array(embed).astype(
-                            float)  # idx2node, return embeddings were indices
+                            float)  # 
                 two_nodes = np.column_stack((labels[:, 0], labels[:, 1]))
                 label_data = list(map(int, labels[:, 2]))
                 two_nodes_tuples = tuple(map(tuple, two_nodes))  # convert pairs to tuple
@@ -79,7 +77,7 @@ def computeLogRes_mane_attention():
                 for each_pair in two_nodes_tuples:
                     first_node = each_pair[0]
                     second_node = each_pair[1]
-                    if first_node in node_embed_dict and second_node in node_embed_dict:  # updated here for mve
+                    if first_node in node_embed_dict and second_node in node_embed_dict:  
                         first_node_emb = node_embed_dict[first_node]
                         second_node_emb = node_embed_dict[second_node]
                         concat_emb[each_pair] = np.concatenate((first_node_emb, second_node_emb))
@@ -87,7 +85,7 @@ def computeLogRes_mane_attention():
 
                 X = np.array(list(concat_emb.values()))
 
-                # Then converting to an array is a must, you can do indexing []
+                
                 y = np.array(list(map(int, label_emb.values())))
                 n_classes = len(np.unique(y))
 
@@ -224,8 +222,6 @@ def computeLogRes_mane_attention():
 
         sumAUCList = []
         sumAUCPRList = []
-        # idx2node = {idx:n  for (idx, n) in enumerate(common_node_names)}
-        #  node2idx = {int(n): int(idx) for (idx, n) in enumerate(common_node_names)}
 
         sumaverages = 0
         sumaveragesAUCPR = 0
@@ -239,7 +235,7 @@ def computeLogRes_mane_attention():
                 train_index = np.loadtxt(
                     pathTest + "/" + dataset_choice + "/train_indices" + str(rep) + str(
                         j) + ".txt",
-                    dtype=int)  # integer format write
+                    dtype=int)  
                 test_index = np.loadtxt(
                     pathTest + "/" + dataset_choice + "/test_indices" + str(rep) + str(
                         j) + ".txt", dtype=int)
@@ -249,12 +245,12 @@ def computeLogRes_mane_attention():
                 with open(File) as f:
 
                     for line in f:
-                        key_protein = ((line.split()[0]))  # to prevent +e  values
+                        key_protein = ((line.split()[0]))  
                         embed = np.array(line.split()[1:])
                         node_embed_dict[key_protein] = np.array(embed).astype(float)
                 two_nodes = np.column_stack((labels[:, 0], labels[:, 1]))
                 label_data = list(map(int, labels[:, 2]))
-                two_nodes_tuples = tuple(map(tuple, two_nodes))  # convert pairs to tuple
+                two_nodes_tuples = tuple(map(tuple, two_nodes))  
                 tuple_label_dict = dict(zip(two_nodes_tuples, label_data))
 
                 ############preparing embedding data based on given labelled pairs#############
@@ -264,7 +260,7 @@ def computeLogRes_mane_attention():
                 for each_pair in two_nodes_tuples:
                     first_node = each_pair[0]
                     second_node = each_pair[1]
-                    if first_node in node_embed_dict and second_node in node_embed_dict:  # updated here for mve
+                    if first_node in node_embed_dict and second_node in node_embed_dict:  
 
                         first_node_emb = node_embed_dict[first_node]
                         second_node_emb = node_embed_dict[second_node]
@@ -281,7 +277,7 @@ def computeLogRes_mane_attention():
                 logisticRegr.fit(X_train, y_train)
                 predictions = logisticRegr.predict_proba(X_test)[:, 1]
 
-                # print(classification_report(ytest,predictions, digits=3))
+                
                 fpr, tpr, thresholds = metrics.roc_curve(y_test, predictions, pos_label=1)
                 sumAUC += metrics.auc(fpr, tpr)
                 sumAUCList.append(metrics.auc(fpr, tpr))
@@ -339,7 +335,7 @@ def computeLogRes_mane_attention():
         sum_disease_rk = 0
         sum_disease_apk = 0
         sum_disease_mapk = 0
-        for dis in range(len(diseases)):  # len(diseases)
+        for dis in range(len(diseases)):  
             disease = diseases[dis]
             sumAUCList = []
             sumAUCPRList = []
@@ -373,12 +369,12 @@ def computeLogRes_mane_attention():
                     # idx2node = {idx: str(node) for (idx, node) in enumerate(common_node_names)}
                     File = pathRead + "Embedding_concatenated" + str(j) + "_epoch_10_.txt"
                     with open(File) as f:
-                        #  first_line = f.readline()  # SKIP FIRST LINE
+                        
                         for line in f:
                             key_protein = int(line.split()[0])
                             embed = np.array(line.split()[1:])
                             node_embed_dict[str(key_protein)] = np.array(embed).astype(
-                                float)  # idx2node, return embeddings were indices
+                                float)  
 
                     trainIndices = []
                     train_IndiceFile = pathTest + "/" + dataset_choice + "/" + disease + "" + dataset + "" + str(
@@ -386,22 +382,21 @@ def computeLogRes_mane_attention():
                     fR = open(train_IndiceFile, 'r')
                     for line in fR:
                         trainIndices.append(int(line.strip()))
-                    xtrain = []  # torch.Tensor(torch.ones(len(trainIndices),resultOfModel1.size(1)))
+                    xtrain = []  
 
                     train_label_file = pathTest + "/" + dataset_choice + "/" + disease + dataset + "" + str(
                         rep) + "" + str(j) + "trainLabel.txt"
                     ytrain = []
                     fR = open(train_label_file, 'r')
 
-                    # index_xtrain=0
                     index = 0
                     trainindicesused = []
                     for line in fR:  # as reading train labels
                         i = trainIndices[index]  # i is node name in ppi, since in ppi nodes reprsented by indices
                         i = str(i)
-                        if i in node_embed_dict:  # for nodes which do not have any neighbors in entire dataset to be trained, to check singleton nodes in all views
+                        if i in node_embed_dict:  # for nodes which do not have any neighbors in entire dataset to be trained,i.e, to check singleton nodes in all views
                             xtrain.append(node_embed_dict[i])
-                            ytrain.append(int(line.strip()[0]))  # if it is in xtrain then it must be also in ytrain
+                            ytrain.append(int(line.strip()[0]))  # if it is in xtrain then it must also be in ytrain
                             trainindicesused.append(int(i))
                         index += 1
 
@@ -423,7 +418,7 @@ def computeLogRes_mane_attention():
                     ytest = []
                     fR = open(test_label_file, 'r')
 
-                    #  index_xtest=0
+                    
                     index = 0
                     testindicesused = []
 
@@ -432,7 +427,7 @@ def computeLogRes_mane_attention():
                         i = str(i)
                         if i in node_embed_dict:  # for nodes which do not have neighbors to be trained
                             xtest.append(node_embed_dict[i])
-                            #  index_xtest += 1
+                            
                             ytest.append(int(line.strip()[0]))
                             testindicesused.append(int(i))
                         index += 1
